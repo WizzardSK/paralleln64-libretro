@@ -1,0 +1,15 @@
+name: ios-preflight
+on: [push, workflow_dispatch]
+jobs:
+  ios:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ios-arm64, ios9]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          make platform=${{ matrix.platform }} HAVE_THR_AL=1 -j$(sysctl -n hw.ncpu) 2>&1 | tail -40
+          ls -la *.dylib
+          lipo -info *.dylib
